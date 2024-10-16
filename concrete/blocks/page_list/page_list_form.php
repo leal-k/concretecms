@@ -50,6 +50,7 @@ use Concrete\Core\Form\Service\Widget\DateTime;
 /** @var int $pfID */
 /** @var int $truncateSummaries */
 /** @var bool $displayFeaturedOnly */
+/** @var bool $excludeFeatured */
 /** @var string $noResultsMessage */
 /** @var bool $displayThumbnail */
 /** @var int $truncateChars */
@@ -298,6 +299,11 @@ echo $userInterface->tabs([
                             ?>
                         </div>
                     <?php } ?>
+                </div>
+
+                <div class="form-check">
+                    <?php echo $form->checkbox("excludeFeatured", "1", $excludeFeatured); ?>
+                    <?php echo $form->label("excludeFeatured", t("Exclude featured pages"), ["class" => "form-check-label"]); ?>
                 </div>
 
                 <div class="form-check">

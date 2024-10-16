@@ -1,6 +1,5 @@
 <?php
 namespace Concrete\Block\PageList;
-
 use BlockType;
 use CollectionAttributeKey;
 use Concrete\Core\Attribute\Key\CollectionKey;
@@ -180,6 +179,11 @@ class Controller extends BlockController implements UsesFeatureInterface
     public $displayFeaturedOnly;
 
     /**
+     * @var bool|int|string|null
+     */
+    public $excludeFeatured;
+
+    /**
      * @var string|null
      */
     public $noResultsMessage;
@@ -276,6 +280,7 @@ class Controller extends BlockController implements UsesFeatureInterface
         $controller->ptID = $_REQUEST['ptID'];
         $controller->rss = $_REQUEST['rss'];
         $controller->displayFeaturedOnly = $_REQUEST['displayFeaturedOnly'] ?? false;
+        $controller->excludeFeatured = $_REQUEST['excludeFeatured'] ?? false;
         $controller->displayAliases = $_REQUEST['displayAliases'] ?? false;
         $controller->paginate = $_REQUEST['paginate'] ?? false;
         $controller->enableExternalFiltering = $_REQUEST['enableExternalFiltering'] ?? false;
@@ -317,7 +322,6 @@ class Controller extends BlockController implements UsesFeatureInterface
         $expr = $this->list->getQueryObject()->expr(); // Get Query Expression Object
 
         $cArray = [];
-
         switch ($this->orderBy) {
             case 'display_asc':
                 $this->list->sortByDisplayOrder();
@@ -399,6 +403,12 @@ class Controller extends BlockController implements UsesFeatureInterface
             $cak = CollectionAttributeKey::getByHandle('is_featured');
             if (is_object($cak)) {
                 $this->list->filterByIsFeatured(1);
+            }
+        }
+        if ($this->excludeFeatured == 1) {
+            $cak = CollectionAttributeKey::getByHandle('is_featured');
+            if (is_object($cak)) {
+                $this->list->filterByAttribute('is_featured', 1, '!=');
             }
         }
         if ($this->displayAliases) {
@@ -528,6 +538,7 @@ class Controller extends BlockController implements UsesFeatureInterface
         $this->set('filterDateStart', null);
         $this->set('filterDateEnd', null);
         $this->set('displayFeaturedOnly', false);
+        $this->set('excludeFeatured', false);
         $this->set('displayAliases', false);
         $this->set('displaySystemPages', false);
         $this->set('ignorePermissions', false);
@@ -761,6 +772,7 @@ class Controller extends BlockController implements UsesFeatureInterface
             'includeDate' => 0,
             'truncateSummaries' => 0,
             'displayFeaturedOnly' => 0,
+            'excludeFeatured' => 0,
             'topicFilter' => '',
             'displayThumbnail' => 0,
             'displayAliases' => 0,
@@ -792,6 +804,7 @@ class Controller extends BlockController implements UsesFeatureInterface
         $args['includeDate'] = ($args['includeDate']) ? '1' : '0';
         $args['truncateSummaries'] = ($args['truncateSummaries']) ? '1' : '0';
         $args['displayFeaturedOnly'] = ($args['displayFeaturedOnly']) ? '1' : '0';
+        $args['excludeFeatured'] = ($args['excludeFeatured']) ? '1' : '0';
         $args['filterByRelated'] = ($args['topicFilter'] == 'related') ? '1' : '0';
         $args['filterByCustomTopic'] = ($args['topicFilter'] == 'custom') ? '1' : '0';
         $args['displayThumbnail'] = ($args['displayThumbnail']) ? '1' : '0';
@@ -830,6 +843,7 @@ class Controller extends BlockController implements UsesFeatureInterface
             $pf->setIncludeAllDescendents($args['includeAllDescendents']);
             $pf->setDisplayAliases($args['displayAliases']);
             $pf->setDisplayFeaturedOnly($args['displayFeaturedOnly']);
+            $pf->setExcludeFeatured($args['excludeFeatured']);
             $pf->setDisplaySystemPages($args['displaySystemPages']);
             $pf->displayShortDescriptionContent();
             $pf->save();

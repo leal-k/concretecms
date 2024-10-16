@@ -125,6 +125,10 @@
       <default value="h5" />
 	  <notnull/>
     </field>
+    <field name="excludeFeatured" type="boolean">
+      <default value="0"/>
+      <notnull/>
+    </field>
     <index name="ptID">
       <col>ptID</col>
     </index>

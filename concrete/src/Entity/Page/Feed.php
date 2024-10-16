@@ -116,6 +116,14 @@ class Feed
     }
 
     /**
+     * @param mixed $pfExcludeFeatured
+     */
+    public function setExcludeFeatured($pfExcludeFeatured)
+    {
+        $this->pfExcludeFeatured = $pfExcludeFeatured;
+    }
+
+    /**
      * @return mixed
      */
     public function getDisplayAliases()
@@ -304,6 +312,11 @@ class Feed
     /**
      * @ORM\Column(type="boolean")
      */
+    protected $pfExcludeFeatured = false;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
     protected $pfDisplaySystemPages = false;
 
     /**
@@ -441,6 +454,9 @@ class Feed
         }
         if ($this->pfDisplayFeaturedOnly) {
             $pl->filterByAttribute('is_featured', true);
+        }
+        if ($this->pfExcludeFeatured) {
+            $pl->filterByAttribute('is_featured', true, '!=');
         }
 
         return $pl;
